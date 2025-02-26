@@ -33,11 +33,22 @@
             color: lightgray;
         }
         .intro input { padding: 10px 0; display: block; width: 100%; overflow: hidden; }
-        .intro button { background-color: darkorange; color: black; border: 1px solid orange; width: 100%; border-radius: 5px; padding: 5px 0; }
+        .intro #clearButton { background-color: darkorange; color: black; border: 1px solid orange; width: 100%; border-radius: 5px; padding: 5px 0; }
         .intro #minimise { position: absolute; right: -15px; width: 30px; height: 30px; border-radius: 50%; background-color: inherit; text-align: center; line-height: 2; top: -15px; cursor: pointer; }
         .intro.hide { width: 0; height: 0; }
         .intro.hide *:not(#minimise) { display: none; font-size:1px;}
 
+        #print {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 30px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            border: 1px solid black;
+            padding: 10px;
+            cursor: pointer;
+         }
         #datasheets-container {
             display: flex;
             width: 90%;
@@ -117,7 +128,8 @@
             .title, .section-title { color:black!important; }
             .section { padding: 0 10px; }
             .section .divider { border-color: black; }
-            .intro { display: none; }
+            .intro, #print { display: none; }
+            
         }
     </style>
 </head>
@@ -128,7 +140,9 @@
         <label for="fileInput">Add your Trench Crusade Json file generated from here </label><a href="https://trenchcompendium.netlify.app/" target="_blank">Trench Crusade List builder</a>
         <input type="file" id="fileInput" accept="application/json">
         <button id="clearButton">Clear</button>
+        
     </div>
+    <button id="print">🖨️</button>
     <div id="datasheets-container"></div>
 
     <script id="datasheet-template" type="text/x-handlebars-template">
@@ -264,8 +278,11 @@
         });
 
         document.getElementById("minimise").addEventListener("click", function() {
-            
             document.getElementsByClassName("intro")[0].classList.toggle("hide");
+        });
+
+        document.getElementById("print").addEventListener("click", function() {
+            window.print();
         });
     </script>
 </body>
