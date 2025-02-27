@@ -4,134 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trench Crusade Visual Lists</title>
+    <title>Trench Crusade Visual List</title>
     <link href="https://fonts.cdnfonts.com/css/conduit-itc-medium" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
-    <style>
-        body {
-            font-family: 'Conduit ITC Medium', 'Times New Roman', Times, serif;
-            background-color: #222;
-            color: #fff;
-            margin: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .intro {
-            position: absolute;
-            width: 200px;
-            left: 20px;
-            top: 20px;
-            background-color: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 10px;
-
-        }
-
-        .intro a {
-            color: lightgray;
-        }
-        .intro input { padding: 10px 0; display: block; width: 100%; overflow: hidden; }
-        .intro #clearButton { background-color: darkorange; color: black; border: 1px solid orange; width: 100%; border-radius: 5px; padding: 5px 0; }
-        .intro #minimise { position: absolute; right: -15px; width: 30px; height: 30px; border-radius: 50%; background-color: inherit; text-align: center; line-height: 2; top: -15px; cursor: pointer; }
-        .intro.hide { width: 0; height: 0; }
-        .intro.hide *:not(#minimise) { display: none; font-size:1px;}
-
-        #print {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            font-size: 30px;
-            background-color: rgba(255,255,255,0.2);
-            border-radius: 5px;
-            border: 1px solid black;
-            padding: 10px;
-            cursor: pointer;
-         }
-        #datasheets-container {
-            display: flex;
-            width: 90%;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .datasheet {
-            width: 600px;
-            background: #333;
-            padding: 20px;
-            border: 2px solid #FFD700;
-            box-shadow: 3px 3px 10px rgba(255, 215, 0, 0.5);
-            margin-bottom: 20px;
-            border-radius: 10px;
-        }
-        .title {
-            font-size: 28px;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 2px solid #FFD700;
-            padding-bottom: 5px;
-            color: #FFD700;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            background: #444;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-        }
-
-        .stats div {
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .section {
-            margin-top: 15px;
-            background: #444;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .section-title {
-            font-weight: bold;
-            border-bottom: 1px solid #FFD700;
-            margin-bottom: 5px;
-            font-size: 18px;
-            color: #FFD700;
-        }
-
-        .section .divider { 
-            border-left: 1px solid white;
-            padding: 0 3px;
-            margin-left: 3px;
-        }
-        .abilities, .equipment, .upgrades {
-            list-style: none;
-            padding: 0;
-        }
-        .abilities li, .equipment li, .upgrades li {
-            background: #555;
-            margin: 5px 0;
-            padding: 5px;
-            border-left: 3px solid #FFD700;
-            border-radius: 3px;
-        }
-        
-        @media print {
-            .page, .page-break { break-after: page; }
-            body { font-size: 80%!important; color:black; }
-            * { border-color: black!important; box-shadow: none!important; }
-            .title, .section-title { color:black!important; }
-            .section { padding: 0 10px; }
-            .section .divider { border-color: black; }
-            .intro, #print { display: none; }
-            
-        }
-    </style>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
 </head>
 
 <body>
@@ -143,55 +20,63 @@
         
     </div>
     <button id="print">🖨️</button>
-    <div id="datasheets-container"></div>
+    <div id="datasheets-container" class="save-from-here"></div>
 
     <script id="datasheet-template" type="text/x-handlebars-template">
+        <h1>{{mainTitle}}</h1>
         {{#each members}}
         <div class="datasheet">
-            <div class="title">{{Name}}</div>
-            <div class="stats">
-                <div>Cost: {{TotalCost}} Ducats</div>
-                <div>Elite: {{#if Elite}}✅{{else}}❌{{/if}}</div>
-                <div>Reserve: {{#if Reserve}}✅{{else}}❌{{/if}}</div>
-            </div>
-            <div class="section">
-                <div class="section-title">Tags</div>
-                <p>{{#each Model.Object.Tags}}{{tag_name}}, {{/each}}</p>
-            </div>
-            <div class="section">
-                <div class="section-title">Stats</div>
-                <p>Movement: {{Model.Object.Movement.[0]}} <span class="divider"></span> Ranged: {{Model.Object.Ranged.[0]}} <span class="divider"></span> Melee: {{Model.Object.Melee.[0]}} <span class="divider"></span> Armour: {{FinalArmour}} <span class="divider"></span> Base: {{Model.Object.Base.[0]}}</p>
-            </div>
+            <div class="title">{{Name}} {{#if Elite}}(Elite){{/if}} - {{TotalCost}}d</div>
+            <div class="base-size">{{Model.Object.Base.[0]}}mm</div>
+            <ul class="list-stats">
+                <li><span class="text movement" title="Movement">Mov.</span><span class="value-wrapper"><span class="value">{{Model.Object.Movement.[0]}}"</span></span></li>
+                <li><span class="text range" title="Range">Range</span><span class="value-wrapper"><span class="value">{{Model.Object.Ranged.[0]}}</span></span></li>
+                <li><span class="text melee" title="Melee">Melee</span><span class="value-wrapper"><span class="value">{{Model.Object.Melee.[0]}}</span></span></li>
+                <li><span class="text armor" title="Armour">Armour</span><span class="value-wrapper"><span class="value">{{FinalArmour}}</span></span></li>
+            </ul>
             <div class="section">
                 <div class="section-title">Abilities</div>
                 <ul class="abilities">
                     {{#each ProcessedAbilities}}
-                        <li><strong>{{name}}</strong>: {{description}}</li>
+                        <li>{{name}}<br/>{{description}}</li>
                     {{/each}}
                 </ul>
             </div>
             <div class="section">
                 <div class="section-title">Equipment</div>
                 <ul class="equipment">
-                    {{#each Equipment}}<li>{{Object.Name}} ({{Cost}}) - {{#if Object.Description.[0].SubContent.[0]}} {{Object.Description.[0].SubContent.[0].Content}} {{else}} {{Object.Blurb}} {{/if}}</li>{{/each}}
+                    {{#each Equipment}}<li>[{{Cost}}] {{Object.Name}} {{#if Object.Tags.[0]}}( {{#each Object.Tags}}{{tag_name}},{{/each}} ){{/if}}
+                        {{#if Object.Modifiers.[0]}} 
+                            = {{#each Object.Modifiers}}{{this}} {{/each}}
+                        {{else}} 
+                            {{#if Object.EventTags.armour}}
+                                = {{Object.EventTags.armour}} armour
+                            {{else}}
+                                {{#if Object.Description.[0].SubContent.[0].Content}}
+                                    = {{Object.Description.[0].SubContent.[0].Content}}
+                                {{/if}}
+                            {{/if}}
+                    {{/if}}
+                </li>{{/each}}
                 </ul>
             </div>
+            {{#if Upgrades.length}}
             <div class="section">
                 <div class="section-title">Upgrades</div>
                 <ul class="upgrades">
-                    {{#if Upgrades.length}}
-                        {{#each Upgrades}}<li>{{Name}}</li>{{/each}}
-                    {{else}}
-                        <li>None</li>
-                    {{/if}}
+                    {{#each Upgrades}}<li>{{Name}} ({{ObjData.cost}}d) <br/> {{Description.[0].Content}}</li>{{/each}}
                 </ul>
             </div>
+            {{/if}}
             <div class="section">
                 <div class="section-title">Description</div>
                 <p>{{Model.Object.Blurb.[0].Content}}</p>
             </div>
+            <div class="footer-section">
+                <p>{{#each Model.Object.Tags}}{{tag_name}}, {{/each}}</p>
+            </div>
         </div>
-        <div class="page-break"></div>
+        <div class="page-break html2pdf__page-break"></div>
         {{/each}}
     </script>
 
@@ -244,6 +129,7 @@
             const reader = new FileReader();
             reader.onload = function (e) {
                 const data = JSON.parse(e.target.result);
+                const mainTitle = data.Name;
                 const members = data.Members.map(member => {
                     const baseCost = member.Model.Cost || 0;
                     const equipmentCost = member.Equipment.reduce((sum, item) => sum + (item.Cost || 0), 0);
@@ -266,7 +152,7 @@
                 
                 const templateSource = document.getElementById("datasheet-template").innerHTML;
                 const template = Handlebars.compile(templateSource);
-                const compiledHtml = template({ members });
+                const compiledHtml = template({ members, mainTitle });
                 document.getElementById("datasheets-container").innerHTML = compiledHtml;
             };
             reader.readAsText(file);
