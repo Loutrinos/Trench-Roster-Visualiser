@@ -383,8 +383,7 @@ h1 {
         border-color: black;
     }
 
-    .intro,
-    #print {
+    .float-button {
         display: none;
     }
 
