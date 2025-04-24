@@ -27,11 +27,12 @@
     <script id="datasheet-template" type="text/x-handlebars-template">
         <h1>{{mainTitle}} - {{ducatCost}}d</h1>
         {{#each members}}
+        {{#unless Reserve}}
         <div class="datasheet">
-            <div class="title">{{Name}} {{#if Elite}}(Elite){{/if}} - {{TotalCost}}d</div>
+            <div class="title">[{{TotalCost}}d] {{Name}} {{#if Elite}}(Elite){{/if}}</div>
             <div class="base-size">base {{Model.Object.Base.[0]}}mm</div>
             <ul class="list-stats">
-                <li><span class="text movement" title="Movement">Mov.</span><span class="value-wrapper"><span class="value">{{Model.Object.Movement.[0]}}"</span></span></li>
+                <li><span class="text movement" title="Movement">Mov.</span><span class="value-wrapper"><span class="value">{{Model.Object.Movement.[0]}}" {{#if Model.Object.EventTags.flying}}<span>fly</span>{{/if}}</span></span></li>
                 <li><span class="text range" title="Range">Range</span><span class="value-wrapper"><span class="value">{{Model.Object.Ranged.[0]}}</span></span></li>
                 <li><span class="text melee" title="Melee">Melee</span><span class="value-wrapper"><span class="value">{{Model.Object.Melee.[0]}}</span></span></li>
                 <li><span class="text armor" title="Armour">Armour</span><span class="value-wrapper"><span class="value">{{FinalArmour}}</span></span></li>
@@ -77,6 +78,7 @@
             </div>
         </div>
         <div class="page-break html2pdf__page-break"></div>
+        {{/unless}}
         {{/each}}
     </script>
 
@@ -151,10 +153,12 @@
                 const mainTitle = data.Name;
                 const ducatCost = data.DucatCost;
                 const members = data.Members.map(member => {
+                    // calculate cost
                     const baseCost = member.Model.Cost || 0;
                     const equipmentCost = member.Equipment.reduce((sum, item) => sum + (item.Cost || 0), 0);
                     const totalCost = baseCost + equipmentCost;
 
+                    // calculate armor
                     let baseArmour = member.Model.Object.Armour[0] || 0;
                     const equipmentArmour = member.Equipment.reduce((sum, item) => sum + (item.Object.EventTags?.armour || 0), 0);
                     const finalArmour = baseArmour + equipmentArmour;
@@ -178,15 +182,18 @@
             reader.readAsText(file);
         });
 
+        // default screen and clear button func
         document.getElementById("clearButton").addEventListener("click", function() {
             document.getElementById("datasheets-container").innerHTML = '<span class="default-text">Press 📂 to add a Json File generated from <a href="https://trenchcompendium.netlify.app/" target="_blank">Trench Crusade List builder</a>,<br/>press clear to wipe the data, <br/>press 🖨️ to print it<br/>press 🌙 to toggle dark and light theme</span>';
             document.getElementById("fileInput").value = "";
         });
 
+        // print button func
         document.getElementById("print").addEventListener("click", function() {
             window.print();
         });
         
+        // dark/light button func
         document.getElementById("theme").addEventListener("click", function() {
             document.getElementsByTagName("body")[0].classList.toggle("light");
         });
