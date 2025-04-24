@@ -50,7 +50,7 @@
             <div class="section">
                 <div class="section-title">Equipment</div>
                 <ul class="equipment">
-                    {{#each Equipment}}<li>[{{Cost}}] {{Object.Name}} {{#if Object.Tags.[0]}}( {{#each Object.Tags}}{{tag_name}},{{/each}} ){{/if}}
+                    {{#each Equipment}}<li>[{{Cost}}d] {{Object.Name}} {{#if Object.Tags.[0]}}( {{#each Object.Tags}}{{tag_name}}{{#unless @last}}, {{/unless}}{{/each}} ){{/if}}
                         {{#if Object.Modifiers.[0]}} 
                             = {{#each Object.Modifiers}}{{this}} {{/each}}
                         {{else}} 
@@ -69,12 +69,12 @@
             <div class="section">
                 <div class="section-title">Upgrades</div>
                 <ul class="upgrades">
-                    {{#each Upgrades}}<li>{{Name}} ({{ObjData.cost}}d) <br/> {{Description.[0].Content}}</li>{{/each}}
+                    {{#each Upgrades}}<li>[{{ObjData.cost}}d] {{Name}} <br/> {{Description.[0].Content}}</li>{{/each}}
                 </ul>
             </div>
             {{/if}}
             <div class="footer-section">
-                <p>{{#each Model.Object.Tags}}{{tag_name}}, {{/each}}</p>
+                <p>{{#each Model.Object.Tags}}{{tag_name}}{{#unless @last}}, {{/unless}}{{/each}}</p>
             </div>
         </div>
         <div class="page-break html2pdf__page-break"></div>
