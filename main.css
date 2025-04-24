@@ -128,14 +128,13 @@ h1 {
 }
 
 .datasheet {
-    width: 580px;
+    width: 45%;
     background: var(--bg-color-datasheet);
-    padding: 20px;
+    padding: 10px 10px 40px 10px;
     border: 2px solid var(--main-color);
     box-shadow: 3px 3px 1px -1px var(--main-color);
     margin-bottom: 20px;
     position: relative;
-    padding-bottom: 40px;
 }
 
 .title {
@@ -174,7 +173,7 @@ h1 {
 
 .section-title {
     margin-bottom: 5px;
-    font-size: 25px;
+    font-size: 1.3rem;
     color: var(--font-color);
     font-family: "Deutschische";
 }
@@ -206,7 +205,7 @@ h1 {
 .base-size {
     position: absolute;
     right: 20px;
-    top: 23px;
+    top: 17px;
     width: 50px;
     height: 40px;
     line-height: 1.2;
@@ -377,6 +376,10 @@ h1 {
         border-color: black !important;
         box-shadow: none !important;
     }
+
+    .datasheet { width: auto;}
+    .datasheet>.title { font-size: 1.5rem; }
+    .list-stats { transform: scale(0.8); align-items: flex-start; justify-content: flex-start; }
 
     .title,
     .section-title {
