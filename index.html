@@ -33,8 +33,8 @@
             <div class="base-size">base {{Model.Object.Base.[0]}}mm</div>
             <ul class="list-stats">
                 <li><span class="text movement" title="Movement">Mov.</span><span class="value-wrapper"><span class="value">{{Model.Object.Movement.[0]}}" {{#if Model.Object.EventTags.flying}}<span>fly</span>{{/if}}</span></span></li>
-                <li><span class="text range" title="Range">Range</span><span class="value-wrapper"><span class="value">{{Model.Object.Ranged.[0]}}</span></span></li>
-                <li><span class="text melee" title="Melee">Melee</span><span class="value-wrapper"><span class="value">{{Model.Object.Melee.[0]}}</span></span></li>
+                <li><span class="text range" title="Range">Range</span><span class="value-wrapper"><span class="value">{{FinalRanged}}</span></span></li>
+                <li><span class="text melee" title="Melee">Melee</span><span class="value-wrapper"><span class="value">{{FinalMelee}}</span></span></li>
                 <li><span class="text armor" title="Armour">Armour</span><span class="value-wrapper"><span class="value">{{FinalArmour}}</span></span></li>
             </ul>
             {{#if ProcessedAbilities}}
@@ -73,6 +73,14 @@
                 </ul>
             </div>
             {{/if}}
+            {{#if Skills.length}}
+            <div class="section">
+                <div class="section-title">Skills</div>
+                <ul class="upgrades">
+                    {{#each Skills}}<li>{{name}} <br/> {{description.[0].content}}</li>{{/each}}
+                </ul>
+            </div>
+            {{/if}}
             <div class="footer-section">
                 <p>{{#each Model.Object.Tags}}{{tag_name}}{{#unless @last}}, {{/unless}}{{/each}}</p>
             </div>
@@ -104,7 +112,11 @@
             "ab_swarmingattack": "Swarming Attack",
             "ab_battlefielddemolition": "Battlefield Demolition",
             "ab_fortify": "Fortify",
-            "db_demine": "De-mine"
+            "db_demine": "De-mine",
+            "ab_shockcharge": "Shock Charge",
+            "ab_godwithus": "God is With Us!",
+            "ab_onwardchristiansoldiers": "Onwards, Christian Soldiers!",
+            "ab_demonicaura": "Demonic Aura"
         };
 
         const keywordDescriptions = {
@@ -128,7 +140,11 @@
             "ab_swarmingattack": "When the Pit Locust makes a melee attack, it can make an additional attack with its stinger if it charged during this Activation. Pit Locusts suffer no penalties for fighting unarmed, nor do they suffer penalties or restrictions for making Off-Hand Attacks with their stingers. The first attack made by a Pit Locust has the Keyword SHRAPNEL and therefore causes an additional BLOOD MARKER. ",
             "ab_battlefielddemolition": "The Engineer ignores HEAVY rules for Satchel Charges.",
             "ab_fortify": "During their Activation, an Engineer can take a RISKY ACTION with +1 DICE. If successful, the engineer is considered to be in Cover until the model moves. This ACTION cannot be used if the model is in Melee combat.",
-            "db_demine": "As a RISKY ACTION the Engineer can disable any mine or trapped terrain they move in contact with. If they fail, the mine blows up as described in applicable rules."
+            "db_demine": "As a RISKY ACTION the Engineer can disable any mine or trapped terrain they move in contact with. If they fail, the mine blows up as described in applicable rules",
+            "ab_shockcharge": "When a Shocktrooper charges, roll 2D6 instead of 1D6 and then add the highest of the two dice to their charge move.",
+            "ab_godwithus": "Select one friendly model within 6” of the Priest (including the Priest) and take a RISKY ACTION. If successful, the model immediately gains a BLESSING MARKER.",
+            "ab_onwardchristiansoldiers": "All friendly models that are within 8” of the Trench Cleric at the start of their Activation are not affected by FEAR.",
+            "ab_demonicaura": "Sloth: enemy in 8in treat minor as down (no exceptions), Envy: enemy in 12in cannot charge units in melee already, Pride: end of activation, enemy in 8in suffer BLOOD MARKER, Greed: must charge Saint if visible and in 12in (no jump/climb/cross dang terrain), Wrath: friendly in 8in +1D in Dash and Melee, Lust: enemy in 6in no armor (excl penalties or natural effects), Gluttony: enemis in 8in roll ACTION with -1D"
 
         };
 
@@ -152,6 +168,7 @@
                 const data = JSON.parse(e.target.result);
                 const mainTitle = data.Name;
                 const ducatCost = data.DucatCost;
+
                 const members = data.Members.map(member => {
                     // calculate cost
                     const baseCost = member.Model.Cost || 0;
@@ -163,10 +180,22 @@
                     const equipmentArmour = member.Equipment.reduce((sum, item) => sum + (item.Object.EventTags?.armour || 0), 0);
                     const finalArmour = baseArmour + equipmentArmour;
 
+                    // calculate ranged
+                    let baseRanged = member.Model.Object.Ranged[0] || 0;
+                    const skillRanged = member.Skills.reduce((sum, item) => sum + (item.eventtags?.ranged || 0), 0);
+                    const finalRanged = baseRanged + skillRanged;
+
+                    // calculate melee
+                    let baseMelee = member.Model.Object.Melee[0] || 0;
+                    const skillMelee = member.Skills.reduce((sum, item) => sum + (item.eventtags?.melee || 0), 0);
+                    const finalMelee = baseMelee + skillMelee;
+
                     return {
                         ...member,
                         TotalCost: totalCost,
                         FinalArmour: finalArmour,
+                        FinalRanged: finalRanged,
+                        FinalMelee: finalMelee,
                         ProcessedAbilities: member.Model.Object.Abilities.map(ability => ({
                             name: keywordMap[ability.Content] || ability.Content,
                             description: keywordDescriptions[ability.Content] || "No description available."
