@@ -192,6 +192,12 @@
                     const skillMelee = member.Skills.reduce((sum, item) => sum + (item.eventtags?.melee || 0), 0);
                     const finalMelee = baseMelee + skillMelee;
 
+                    // add update keywords
+                    member.Upgrades.map(upgrade => {
+                        if (upgrade.ID == "up_forwardposition")
+                        member.Model.Object.Tags.push({ "tag_name": "INFILTRATOR", "val": "gl_infiltrator" })
+                    });
+
                     return {
                         ...member,
                         TotalCost: totalCost,
