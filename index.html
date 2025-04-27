@@ -17,6 +17,7 @@
     <label for="fileInput" class="custom-file-input float-button">📂</label>
     <input type="file" id="fileInput" accept="application/json">
     <button id="clearButton" class="float-button">Clear</button>
+    <button id="saveButton" class="save-button float-button">Save</button>
     <button id="print" class="float-button">🖨️</button>
     <button id="theme" class="float-button">🌙</button>
     <div id="datasheets-container" class="save-from-here">
@@ -25,6 +26,7 @@
         press 🖨️ to print it<br/>
         press 🌙 to toggle dark and light theme</span>
     </div>
+    <div id="localfiles"></div>
 
     <script id="datasheet-template" type="text/x-handlebars-template">
         <h1>{{mainTitle}} - {{ducatCost}}d</h1>
@@ -106,6 +108,24 @@
         {{/each}}
     </script>
 
+    <script id="localfiles-template" type="text/x-handlebars-template">
+        <h2>Local Lists</h2>
+        <table>
+            <tr>
+                <th>List Name</th>
+                <th>Ducats</th>
+                <th>Actions</th>
+            </tr>
+            {{#each tableData}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{ducats}}</td>
+                <td><button id="loadList" onclick="FetchList('{{id}}')">Load</button><button id="removeList" onclick="removeList('{{id}}')">Remove</button></td>
+            </tr>
+            {{/each}}
+        </table>
+    </script>
+
     <script>
         const keywordMap = {
             "ab_tough": "Tough",
@@ -163,7 +183,7 @@
             "ab_demonicaura": "Sloth: enemy in 8in treat minor as down (no exceptions), Envy: enemy in 12in cannot charge units in melee already, Pride: end of activation, enemy in 8in suffer BLOOD MARKER, Greed: must charge Saint if visible and in 12in (no jump/climb/cross dang terrain), Wrath: friendly in 8in +1D in Dash and Melee, Lust: enemy in 6in no armor (excl penalties or natural effects), Gluttony: enemis in 8in roll ACTION with -1D"
 
         };
-
+        let data = "";
         // Function to process abilities
         function processAbilities(abilities) {
             return abilities.map(ability => {
@@ -181,67 +201,118 @@
 
             const reader = new FileReader();
             reader.onload = function (e) {
-                const data = JSON.parse(e.target.result);
-                const mainTitle = data.Name;
-                const ducatCost = data.DucatCost;
-
-                const members = data.Members.map(member => {
-                    // calculate cost
-                    const baseCost = member.Model.Cost || 0;
-                    const equipmentCost = member.Equipment.reduce((sum, item) => sum + (item.Cost || 0), 0);
-                    const totalCost = baseCost + equipmentCost;
-
-                    // calculate armor
-                    let baseArmour = member.Model.Object.Armour[0] || 0;
-                    const equipmentArmour = member.Equipment.reduce((sum, item) => sum + (item.Object.EventTags?.armour || 0), 0);
-                    const finalArmour = baseArmour + equipmentArmour;
-
-                    // calculate ranged
-                    let baseRanged = member.Model.Object.Ranged[0] || 0;
-                    const skillRanged = member.Skills.reduce((sum, item) => sum + (item.eventtags?.ranged || 0), 0);
-                    const finalRanged = baseRanged + skillRanged;
-
-                    // calculate melee
-                    let baseMelee = member.Model.Object.Melee[0] || 0;
-                    const skillMelee = member.Skills.reduce((sum, item) => sum + (item.eventtags?.melee || 0), 0);
-                    const finalMelee = baseMelee + skillMelee;
-
-                    // add update keywords
-                    member.Upgrades.map(upgrade => {
-                        if (upgrade.ID == "up_forwardposition")
-                        member.Model.Object.Tags.push({ "tag_name": "INFILTRATOR", "val": "gl_infiltrator" })
-                    });
-
-                    return {
-                        ...member,
-                        TotalCost: totalCost,
-                        FinalArmour: finalArmour,
-                        FinalRanged: finalRanged,
-                        FinalMelee: finalMelee,
-                        ProcessedAbilities: member.Model.Object.Abilities.map(ability => ({
-                            name: keywordMap[ability.Content] || ability.Content,
-                            description: keywordDescriptions[ability.Content] || "No description available."
-                        }))
-                    };
-                });
-                
-                const templateSource = document.getElementById("datasheet-template").innerHTML;
-                const template = Handlebars.compile(templateSource);
-                const compiledHtml = template({ members, mainTitle, ducatCost });
-                document.getElementById("datasheets-container").innerHTML = compiledHtml;
+                data = JSON.parse(e.target.result);
+                LoadList(data);
             };
             reader.readAsText(file);
+        });
+
+        function LoadList(file) {
+            const mainTitle = file.Name;
+            const ducatCost = file.DucatCost;
+            console.log(file);
+            const members = file.Members.map(member => {
+                // calculate cost
+                const baseCost = member.Model.Cost || 0;
+                const equipmentCost = member.Equipment.reduce((sum, item) => sum + (item.Cost || 0), 0);
+                const totalCost = baseCost + equipmentCost;
+
+                // calculate armor
+                let baseArmour = member.Model.Object.Armour[0] || 0;
+                const equipmentArmour = member.Equipment.reduce((sum, item) => sum + (item.Object.EventTags?.armour || 0), 0);
+                const finalArmour = baseArmour + equipmentArmour;
+
+                // calculate ranged
+                let baseRanged = member.Model.Object.Ranged[0] || 0;
+                const skillRanged = member.Skills.reduce((sum, item) => sum + (item.eventtags?.ranged || 0), 0);
+                const finalRanged = baseRanged + skillRanged;
+
+                // calculate melee
+                let baseMelee = member.Model.Object.Melee[0] || 0;
+                const skillMelee = member.Skills.reduce((sum, item) => sum + (item.eventtags?.melee || 0), 0);
+                const finalMelee = baseMelee + skillMelee;
+
+                // add update keywords
+                member.Upgrades.map(upgrade => {
+                    if (upgrade.ID == "up_forwardposition")
+                    member.Model.Object.Tags.push({ "tag_name": "INFILTRATOR", "val": "gl_infiltrator" })
+                });
+
+                return {
+                    ...member,
+                    TotalCost: totalCost,
+                    FinalArmour: finalArmour,
+                    FinalRanged: finalRanged,
+                    FinalMelee: finalMelee,
+                    ProcessedAbilities: member.Model.Object.Abilities.map(ability => ({
+                        name: keywordMap[ability.Content] || ability.Content,
+                        description: keywordDescriptions[ability.Content] || "No description available."
+                    }))
+                };
+            });
+            
+            const templateSource = document.getElementById("datasheet-template").innerHTML;
+            const template = Handlebars.compile(templateSource);
+            const compiledHtml = template({ members, mainTitle, ducatCost });
+            document.getElementById("datasheets-container").innerHTML = compiledHtml;
+        }
+
+        function FetchList(id) {
+            if (!window.localStorage.key(id)) return;
+            const list = JSON.parse(window.localStorage.getItem(id));
+
+            LoadList(list);
+        }
+
+        function saveList() {
+            if (!data) return;
+            saveName = `${data.ID}`;
+            window.localStorage.setItem(saveName, JSON.stringify(data));
+        }
+
+        function removeList(id) {
+            if(!window.localStorage.key(id)) return;
+            window.localStorage.removeItem(id);
+            loadLocalLists();
+        }
+
+        function loadLocalLists() {
+            if (window.localStorage.length <=0) return;
+            let tableData = [];
+             Object.keys(window.localStorage).forEach(key => {
+                list = JSON.parse(window.localStorage.getItem(key));
+                tableData.push({
+                    id: list.ID,
+                    ducats: list.DucatTotal,
+                    name: list.Name
+                });
+            });
+            const templateSource = document.getElementById("localfiles-template").innerHTML;
+            const template = Handlebars.compile(templateSource);
+            const compiledHtml = template({ tableData });
+            document.getElementById("localfiles").innerHTML = compiledHtml;
+        }
+
+        // load local saved lists
+        window.addEventListener("load", function(){
+            loadLocalLists();
+            
         });
 
         // default screen and clear button func
         document.getElementById("clearButton").addEventListener("click", function() {
             document.getElementById("datasheets-container").innerHTML = '<span class="default-text">Press 📂 to add a Json File generated from <a href="https://trenchcompendium.netlify.app/" target="_blank">Trench Crusade List builder</a>,<br/>press clear to wipe the data, <br/>press 🖨️ to print it<br/>press 🌙 to toggle dark and light theme</span>';
             document.getElementById("fileInput").value = "";
+            loadLocalLists();
         });
 
         // print button func
         document.getElementById("print").addEventListener("click", function() {
             window.print();
+        });
+
+        document.getElementById("saveButton").addEventListener("click", function() {
+            saveList();
         });
         
         // dark/light button func
