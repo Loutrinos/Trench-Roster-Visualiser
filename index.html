@@ -127,6 +127,7 @@
     </script>
 
     <script>
+        let data = "";
         const keywordMap = {
             "ab_tough": "Tough",
             "ab_demonichorror": "Demonic Horror",
@@ -154,7 +155,6 @@
             "ab_onwardchristiansoldiers": "Onwards, Christian Soldiers!",
             "ab_demonicaura": "Demonic Aura"
         };
-
         const keywordDescriptions = {
             "ab_tough": "If a TOUGH model would be taken Out Of Action, it is knocked Down instead. After a TOUGH model has been knocked Down in this way once, it can be taken Out of Action as normal.",
             "ab_demonichorror": "The Sorcerer causes FEAR.",
@@ -183,7 +183,7 @@
             "ab_demonicaura": "Sloth: enemy in 8in treat minor as down (no exceptions), Envy: enemy in 12in cannot charge units in melee already, Pride: end of activation, enemy in 8in suffer BLOOD MARKER, Greed: must charge Saint if visible and in 12in (no jump/climb/cross dang terrain), Wrath: friendly in 8in +1D in Dash and Melee, Lust: enemy in 6in no armor (excl penalties or natural effects), Gluttony: enemis in 8in roll ACTION with -1D"
 
         };
-        let data = "";
+        
         // Function to process abilities
         function processAbilities(abilities) {
             return abilities.map(ability => {
@@ -195,18 +195,7 @@
             });
         }
 
-        document.getElementById("fileInput").addEventListener("change", function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                data = JSON.parse(e.target.result);
-                LoadList(data);
-            };
-            reader.readAsText(file);
-        });
-
+        // main load list function
         function LoadList(file) {
             const mainTitle = file.Name;
             const ducatCost = file.DucatCost;
@@ -256,7 +245,8 @@
             const compiledHtml = template({ members, mainTitle, ducatCost });
             document.getElementById("datasheets-container").innerHTML = compiledHtml;
         }
-
+     
+        // fetch local list
         function FetchList(id) {
             if (!window.localStorage.key(id)) return;
             const list = JSON.parse(window.localStorage.getItem(id));
@@ -264,18 +254,21 @@
             LoadList(list);
         }
 
+        // save list
         function saveList() {
             if (!data) return;
             saveName = `${data.ID}`;
             window.localStorage.setItem(saveName, JSON.stringify(data));
         }
 
+        // remove list
         function removeList(id) {
             if(!window.localStorage.key(id)) return;
             window.localStorage.removeItem(id);
             loadLocalLists();
         }
 
+        // load lists for table
         function loadLocalLists() {
             if (window.localStorage.length <=0) return;
             let tableData = [];
@@ -296,7 +289,19 @@
         // load local saved lists
         window.addEventListener("load", function(){
             loadLocalLists();
-            
+        });
+
+        // load file from user input
+        document.getElementById("fileInput").addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                data = JSON.parse(e.target.result);
+                LoadList(data);
+            };
+            reader.readAsText(file);
         });
 
         // default screen and clear button func
@@ -311,6 +316,7 @@
             window.print();
         });
 
+        // save button
         document.getElementById("saveButton").addEventListener("click", function() {
             saveList();
         });
