@@ -413,7 +413,7 @@ h1 {
     }
 
     body {
-        font-size: 10px !important;
+        font-size: 9px !important;
         color: black;
     }
 
@@ -426,15 +426,20 @@ h1 {
     .datasheet .title { font-size: 1.4rem; }
     .list-stats { transform: scale(0.8); align-items: flex-start; justify-content: flex-start; }
     .image { height: 100px; }
-    .title { font-size: 2rem; }
+    .title { font-size: 2rem; height: auto; }
     .title-stats { height: auto; }
     .title,
     .section-title {
         color: black !important;
+        font-size: 1rem;
+    }
+    .list-stats li .value {
+        font-size: 16px !important;
     }
 
     .section {
         padding: 0 10px;
+        margin: 0;
     }
 
     .section .divider {

@@ -89,6 +89,14 @@
                 </ul>
             </div>
             {{/if}}
+            {{#if Injuries.length}}
+            <div class="section">
+                <div class="section-title">Injuries</div>
+                <ul class="upgrades">
+                    {{#each Injuries}}<li>{{Name}} <br/> {{Description.[0].Content}}</li>{{/each}}
+                </ul>
+            </div>
+            {{/if}}
             <div class="footer-section">
                 <p>{{#each Model.Object.Tags}}{{tag_name}}{{#unless @last}}, {{/unless}}{{/each}}</p>
             </div>
