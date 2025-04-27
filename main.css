@@ -139,12 +139,20 @@ h1 {
     padding-bottom: 40px;
 }
 
+.datasheet > header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
 .title {
-    font-size: 32px;
+    font-size: 1.5rem;
     background-color: var(--main-color);
-    padding: 5px 0 5px 10px;
+    padding: 5px 60px 5px 10px;
     color: var(--font-color-bg-dark);
     font-family: "Deutschische";
+    height: 67px;
+    box-sizing: border-box;
 }
 
 .datasheet>.title {
@@ -164,6 +172,28 @@ h1 {
     text-align: center;
     font-size: 14px;
     font-weight: bold;
+}
+
+.image {
+    height: 140px;
+    padding: 0.5rem;
+    background-color: var(--main-color);
+    box-sizing: border-box;
+    max-width: 25%;
+}
+
+.image img { 
+    height: 100%; 
+    
+    min-width: 100%; 
+    min-height: 100%; 
+
+}
+
+.title-stats {
+    box-sizing: border-box;
+    flex-grow: 1;
+    height: 116px;
 }
 
 .section {
@@ -380,9 +410,11 @@ h1 {
     }
 
     .datasheet { width: auto;}
-    .datasheet>.title { font-size: 1.5rem; }
+    .datasheet .title { font-size: 1.4rem; }
     .list-stats { transform: scale(0.8); align-items: flex-start; justify-content: flex-start; }
-
+    .image { height: 100px; }
+    .title { font-size: 2rem; }
+    .title-stats { height: auto; }
     .title,
     .section-title {
         color: black !important;

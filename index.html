@@ -31,14 +31,19 @@
         {{#each members}}
         {{#unless Reserve}}
         <div class="datasheet">
-            <div class="title">[{{TotalCost}}d] {{Name}} {{#if Elite}}(Elite){{/if}}</div>
-            <div class="base-size">base {{Model.Object.Base.[0]}}mm</div>
-            <ul class="list-stats">
-                <li><span class="text movement" title="Movement">Mov.</span><span class="value-wrapper"><span class="value">{{Model.Object.Movement.[0]}}" {{#if Model.Object.EventTags.flying}}<span>fly</span>{{/if}}</span></span></li>
-                <li><span class="text range" title="Range">Range</span><span class="value-wrapper"><span class="value">{{FinalRanged}}</span></span></li>
-                <li><span class="text melee" title="Melee">Melee</span><span class="value-wrapper"><span class="value">{{FinalMelee}}</span></span></li>
-                <li><span class="text armor" title="Armour">Armour</span><span class="value-wrapper"><span class="value">{{FinalArmour}}</span></span></li>
-            </ul>
+            <header>
+                <div class="image"><img src="images/{{Model.ID}}.png" onerror="this.src='images/error.jpg'" alt="{{Name}}"></div>
+                <div class="title-stats">
+                    <div class="title">[{{TotalCost}}d] {{Name}} {{#if Elite}}(Elite){{/if}}</div>
+                    <div class="base-size">base {{Model.Object.Base.[0]}}mm</div>
+                    <ul class="list-stats">
+                        <li><span class="text movement" title="Movement">Mov.</span><span class="value-wrapper"><span class="value">{{Model.Object.Movement.[0]}}" {{#if Model.Object.EventTags.flying}}<span>fly</span>{{/if}}</span></span></li>
+                        <li><span class="text range" title="Range">Range</span><span class="value-wrapper"><span class="value">{{FinalRanged}}</span></span></li>
+                        <li><span class="text melee" title="Melee">Melee</span><span class="value-wrapper"><span class="value">{{FinalMelee}}</span></span></li>
+                        <li><span class="text armor" title="Armour">Armour</span><span class="value-wrapper"><span class="value">{{FinalArmour}}</span></span></li>
+                    </ul>
+                </div>
+            </header>
             {{#if ProcessedAbilities}}
             <div class="section">
                 <div class="section-title">Abilities</div>
